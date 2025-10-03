@@ -2,9 +2,9 @@ import folium
 from folium import IFrame
 
 # Définition des bornes du Nord de la France
-lat_min, lat_max = 48, 52
-lon_min, lon_max = -1, 5
-lat_step, lon_step = 0.3, 0.5  # Cases plus petites (~11 km en latitude)
+lat_min, lat_max = 49, 51.5
+lon_min, lon_max = 1, 4.5
+lat_step, lon_step = 0.2, 0.3  # Cases plus petites (~11 km en latitude)
 
 # Création de la carte
 m = folium.Map(location=[50.6, 3.0], zoom_start=7, tiles="OpenStreetMap")
@@ -87,7 +87,12 @@ function addCityMarker(map) {
                       var lon = parseFloat(data[0].lon);
 
                       // Ajouter le marqueur
-                      L.marker([lat, lon]).addTo(map)
+                      L.marker([lat, lon], {
+                        icon: L.AwesomeMarkers.icon({
+                            icon: 'info-sign',
+                            markerColor: 'green'
+                        })
+                      }).addTo(map)
                        .bindPopup(city)
                        .openPopup();
 
@@ -118,6 +123,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 """
+
 m.get_root().html.add_child(folium.Element(js_script))
 
 # Sauvegarde
