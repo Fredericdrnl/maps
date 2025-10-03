@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_1f6e2c036e04744b8620917a5cec1366 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+<div id="sidebar" style="
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 250px;
+    height: 200px;
+    background-color: white;
+    z-index:9999;
+    padding: 10px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    font-family: Arial, sans-serif;
+    overflow-y: auto;
+">
+    <h4>Ajouter une ville</h4>
+    <input type="text" id="city" placeholder="Nom de la ville" style="width: 100%;">
+    <ul id="cityList" style="padding-left:10px; margin-top:5px;"></ul>
+</div>
+    
+<script>
+function addCityMarker(map) {
+    var input = document.getElementById('city');
+    input.addEventListener("keypress", function(event) {
+        if(event.key === "Enter") {
+            event.preventDefault();
+            var city = input.value.trim();
+            if(city === "") { return; }
+
+            // Appel API Nominatim
+            fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + city)
+              .then(response => response.json())
+              .then(data => {
+                  if(data.length > 0) {
+                      var lat = parseFloat(data[0].lat);
+                      var lon = parseFloat(data[0].lon);
+
+                      // Ajouter le marqueur
+                      L.marker([lat, lon]).addTo(map)
+                       .bindPopup(city)
+                       .openPopup();
+
+                      // Centrer la carte sur la ville
+                      map.setView([lat, lon], 12);
+
+                      // Ajouter la ville à la liste
+                      var li = document.createElement("li");
+                      li.textContent = city;
+                      document.getElementById("cityList").appendChild(li);
+
+                      input.value = "";
+                  } else {
+                      alert("Ville non trouvée !");
+                  }
+              });
+        }
+    });
+}
+
+// Attendre que la carte Folium soit chargée
+document.addEventListener("DOMContentLoaded", function() {
+    for (var key in window) {
+        if (key.startsWith("map_")) {
+            addCityMarker(window[key]);
+        }
+    }
+});
+</script>
+    
+            <div class="folium-map" id="map_1f6e2c036e04744b8620917a5cec1366" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_1f6e2c036e04744b8620917a5cec1366 = L.map(
+                "map_1f6e2c036e04744b8620917a5cec1366",
+                {
+                    center: [48.8566, 2.3522],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 6,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_22b8d7e7772d314caae01f43238d53c5 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_22b8d7e7772d314caae01f43238d53c5.addTo(map_1f6e2c036e04744b8620917a5cec1366);
+        
+</script>
+</html>
