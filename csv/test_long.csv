@@ -1,113 +1,20 @@
-10 Avenue des Champs-Élysées, Paris, France,blue
-20 Rue de la République, Lyon, France,red
-5 Place du Général de Gaulle, Lille, France,green
-8 Boulevard Vauban, Rouen, France,orange
-12 Rue Nationale, Amiens, France,purple
-22 Rue de Béthune, Lille, France,lightblue
-30 Rue Solférino, Lille, France,lightgreen
-5 Rue du Maréchal Foch, Dunkerque, France,red
-2 Place d’Armes, Valenciennes, France,blue
-15 Rue de Paris, Boulogne-sur-Mer, France,green
-25 Rue Gambetta, Calais, France,darkblue
-12 Rue de la Gare, Arras, France,orange
-8 Rue du Moulin, Cambrai, France,gray
-10 Rue Saint-Nicolas, Compiègne, France,pink
-14 Rue du Maréchal Leclerc, Saint-Quentin, France,purple
-3 Rue de la Cloche, Beauvais, France,green
-7 Rue de la Liberté, Abbeville, France,blue
-6 Rue du Pont, Péronne, France,darkred
-9 Rue du Château, Douai, France,orange
-4 Rue du Général de Gaulle, Lens, France,red
-1 Rue du Port, Dunkerque, France,lightblue
-17 Rue du Marché, Valenciennes, France,green
-19 Rue Neuve, Lille, France,darkpurple
-21 Rue de la Paix, Paris, France,red
-23 Rue Victor Hugo, Lyon, France,orange
-25 Rue Faidherbe, Arras, France,purple
-27 Rue du 8 Mai, Amiens, France,blue
-29 Rue de Metz, Lille, France,lightgreen
-31 Rue Carnot, Douai, France,gray
-33 Rue du Commerce, Calais, France,black
-35 Rue du Moulin, Cambrai, France,lightblue
-37 Rue du Faubourg, Boulogne-sur-Mer, France,red
-39 Rue du Parc, Compiègne, France,green
-41 Rue Pasteur, Saint-Omer, France,pink
-43 Rue Voltaire, Dunkerque, France,orange
-45 Rue du Docteur Roux, Lille, France,darkred
-47 Rue Jules Ferry, Valenciennes, France,lightblue
-49 Rue de la Gare, Béthune, France,green
-51 Rue Paul Bert, Lens, France,red
-53 Rue Gambetta, Arras, France,lightgreen
-55 Rue Jean Jaurès, Douai, France,blue
-57 Rue du Général Leclerc, Amiens, France,gray
-59 Rue de la République, Roubaix, France,black
-61 Rue du 14 Juillet, Tourcoing, France,orange
-63 Rue Nationale, Lille, France,purple
-65 Rue de la Liberté, Dunkerque, France,lightblue
-67 Rue des Écoles, Valenciennes, France,green
-69 Rue du Maréchal Foch, Calais, France,red
-71 Rue du Port, Boulogne-sur-Mer, France,lightgreen
-73 Rue des Lilas, Saint-Quentin, France,gray
-75 Rue des Acacias, Beauvais, France,orange
-77 Rue du Nord, Cambrai, France,blue
-79 Rue de la Fontaine, Lens, France,purple
-81 Rue du Stade, Arras, France,red
-83 Rue Victor Hugo, Dunkerque, France,green
-85 Rue du Général de Gaulle, Amiens, France,lightblue
-87 Rue de la Poste, Lille, France,black
-89 Rue du Moulin, Valenciennes, France,lightgreen
-91 Rue Saint-Pierre, Douai, France,orange
-93 Rue du Château, Calais, France,gray
-95 Rue des Jardins, Boulogne-sur-Mer, France,red
-97 Rue de la Gare, Saint-Omer, France,green
-99 Rue Pasteur, Compiègne, France,lightblue
-101 Rue du Marché, Amiens, France,purple
-103 Rue des Fleurs, Abbeville, France,blue
-105 Rue du 11 Novembre, Arras, France,orange
-107 Rue du Cimetière, Lens, France,red
-109 Rue du Faubourg, Lille, France,lightgreen
-111 Rue du Général Patton, Valenciennes, France,gray
-113 Rue du Moulin, Dunkerque, France,green
-115 Rue de Paris, Rouen, France,lightblue
-117 Rue du Maréchal Juin, Calais, France,red
-119 Rue Saint-Martin, Douai, France,black
-121 Rue des Écoles, Amiens, France,purple
-123 Rue Nationale, Lille, France,blue
-125 Rue du Pont, Beauvais, France,orange
-127 Rue de la Gare, Cambrai, France,green
-129 Rue de la Liberté, Valenciennes, France,red
-131 Rue du Général Leclerc, Dunkerque, France,lightgreen
-133 Rue de la Paix, Arras, France,gray
-135 Rue du 8 Mai, Calais, France,pink
-137 Rue des Acacias, Boulogne-sur-Mer, France,orange
-139 Rue Pasteur, Lille, France,green
-141 Rue du Stade, Amiens, France,red
-143 Rue de la République, Lens, France,lightblue
-145 Rue Victor Hugo, Douai, France,gray
-147 Rue du Marché, Valenciennes, France,purple
-149 Rue du Château, Dunkerque, France,lightgreen
-151 Rue du Port, Boulogne-sur-Mer, France,black
-153 Rue du Parc, Calais, France,orange
-155 Rue de la Fontaine, Arras, France,red
-157 Rue du Nord, Lille, France,green
-159 Rue du Maréchal Foch, Amiens, France,blue
-161 Rue du Général de Gaulle, Rouen, France,lightblue
-163 Rue des Jardins, Valenciennes, France,lightgreen
-165 Rue du 11 Novembre, Cambrai, France,gray
-167 Rue du 14 Juillet, Dunkerque, France,orange
-169 Rue de la Poste, Calais, France,purple
-171 Rue du Moulin, Lens, France,green
-173 Rue Pasteur, Boulogne-sur-Mer, France,red
-175 Rue du Général Leclerc, Lille, France,blue
-177 Rue de la Gare, Amiens, France,gray
-179 Rue des Écoles, Douai, France,lightblue
-181 Rue du Port, Valenciennes, France,green
-183 Rue du Faubourg, Calais, France,orange
-185 Rue du Marché, Dunkerque, France,red
-187 Rue du Parc, Arras, France,blue
-189 Rue du Nord, Lille, France,purple
-191 Rue du Château, Amiens, France,green
-193 Rue Pasteur, Rouen, France,orange
-195 Rue du Général de Gaulle, Calais, France,red
-197 Rue de la République, Dunkerque, France,lightblue
-199 Rue Nationale, Lille, France,lightgreen
+C001;Dupont SARL;LM;75001;Paris;10 Avenue des Champs-Élysées;10 Avenue des Champs-Élysées Paris;2.307;48.869;100
+C002;Martin SA;MJ;69001;Lyon;20 Rue de la République;20 Rue de la République Lyon;4.835;45.767;200
+C003;Durand EURL;V;13001;Marseille;5 Quai du Port;5 Quai du Port Marseille;5.369;43.296;300
+C004;Petit SAS;LJ;31000;Toulouse;15 Boulevard de Strasbourg;15 Boulevard de Strasbourg Toulouse;1.442;43.604;400
+C005;Moreau SARL;LMW;44000;Nantes;8 Rue Crébillon;8 Rue Crébillon Nantes;-1.556;47.218;500
+C006;Robert SA;VJ;67000;Strasbourg;12 Rue des Francs Bourgeois;12 Rue des Francs Bourgeois Strasbourg;7.746;48.583;600
+C007;Richard EURL;S;06000;Nice;30 Avenue Jean Médecin;30 Avenue Jean Médecin Nice;7.265;43.703;700
+C008;Thomas SAS;D;67000;Strasbourg;22 Rue du Vieux Marché aux Poissons;22 Rue du Vieux Marché aux Poissons Strasbourg;7.744;48.583;800
+C009;Robert SARL;LM;59000;Lille;5 Place du Général de Gaulle;5 Place du Général de Gaulle Lille;3.062;50.637;900
+C010;Dubois SA;MJ;67000;Strasbourg;14 Rue des Grandes Arcades;14 Rue des Grandes Arcades Strasbourg;7.752;48.583;1000
+C011;Morel EURL;V;75008;Paris;25 Rue du Faubourg Saint-Honoré;25 Rue du Faubourg Saint-Honoré Paris;2.318;48.872;1100
+C012;Laurent SAS;L;69002;Lyon;50 Rue Mercière;50 Rue Mercière Lyon;4.832;45.764;1200
+C013;Simon SARL;J;13002;Marseille;7 Rue Saint-Ferréol;7 Rue Saint-Ferréol Marseille;5.381;43.296;1300
+C014;Michel SA;V;31000;Toulouse;3 Place du Capitole;3 Place du Capitole Toulouse;1.444;43.604;1400
+C015;Lefebvre EURL;S;44000;Nantes;10 Quai de la Fosse;10 Quai de la Fosse Nantes;-1.552;47.217;1500
+C016;Henry SAS;D;06000;Nice;1 Promenade des Anglais;1 Promenade des Anglais Nice;7.262;43.696;1600
+C017;Roux SARL;LM;75015;Paris;20 Rue de la Convention;20 Rue de la Convention Paris;2.292;48.844;1700
+C018;Faure SA;MJ;69003;Lyon;12 Rue Auguste Comte;12 Rue Auguste Comte Lyon;4.833;45.760;1800
+C019;Blanc EURL;V;13003;Marseille;15 Rue de la République;15 Rue de la République Marseille;5.374;43.297;1900
+C020;Garnier SAS;L;31000;Toulouse;5 Rue du Taur;5 Rue du Taur Toulouse;1.444;43.604;2000

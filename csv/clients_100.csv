@@ -1,0 +1,101 @@
+Code client;Nom client;Jour livraison;Adresse liv cp;Adresse liv ville;Adresse livraison rue;Adresse livraison complète;longitude;latitude;numéro de tournée
+C001;Client_1;JVL;69001;Lyon;Avenue Jean Médecin;Avenue Jean Médecin 69001 Lyon;6.863025;45.473222;884
+C002;Client_2;S;06000;Nice;Avenue Jean Médecin;Avenue Jean Médecin 06000 Nice;4.814931;49.122963;635
+C003;Client_3;SWL;06000;Nice;Rue de la Paix;Rue de la Paix 06000 Nice;1.657883;46.352344;187
+C004;Client_4;DV;31000;Toulouse;Rue de la Gare;Rue de la Gare 31000 Toulouse;3.07778;51.037262;506
+C005;Client_5;WD;75001;Paris;Boulevard Saint-Germain;Boulevard Saint-Germain 75001 Paris;2.471137;43.434453;250
+C006;Client_6;VJM;13001;Marseille;Rue du Faubourg Saint-Honoré;Rue du Faubourg Saint-Honoré 13001 Marseille;1.476822;45.506082;113
+C007;Client_7;LJW;31000;Toulouse;Quai du Port;Quai du Port 31000 Toulouse;1.559325;45.389128;767
+C008;Client_8;SD;13001;Marseille;Quai du Port;Quai du Port 13001 Marseille;1.615164;43.735329;697
+C009;Client_9;SV;67000;Strasbourg;Place du Capitole;Place du Capitole 67000 Strasbourg;4.255066;50.361444;636
+C010;Client_10;J;59000;Lille;Rue de la Paix;Rue de la Paix 59000 Lille;2.911139;46.835678;234
+C011;Client_11;VD;69001;Lyon;Rue de la République;Rue de la République 69001 Lyon;5.569186;44.919306;481
+C012;Client_12;WLV;44000;Nantes;Place du Capitole;Place du Capitole 44000 Nantes;5.524022;44.772002;160
+C013;Client_13;V;06000;Nice;Boulevard Saint-Germain;Boulevard Saint-Germain 06000 Nice;3.722961;48.692558;283
+C014;Client_14;V;59000;Lille;Rue de la Gare;Rue de la Gare 59000 Lille;6.434485;45.078465;486
+C015;Client_15;WJV;13001;Marseille;Rue du Vieux Marché;Rue du Vieux Marché 13001 Marseille;5.423385;46.715231;524
+C016;Client_16;JWS;13001;Marseille;Rue de la Gare;Rue de la Gare 13001 Marseille;1.205476;49.803953;446
+C017;Client_17;VL;13001;Marseille;Place du Capitole;Place du Capitole 13001 Marseille;5.354241;48.922072;476
+C018;Client_18;W;33000;Bordeaux;Place du Capitole;Place du Capitole 33000 Bordeaux;1.117783;49.339033;362
+C019;Client_19;VW;44000;Nantes;Rue du Faubourg Saint-Honoré;Rue du Faubourg Saint-Honoré 44000 Nantes;4.027276;44.461457;578
+C020;Client_20;DJ;67000;Strasbourg;Quai du Port;Quai du Port 67000 Strasbourg;2.025383;51.316346;111
+C021;Client_21;VD;75001;Paris;Rue du Vieux Marché;Rue du Vieux Marché 75001 Paris;1.271199;49.126963;155
+C022;Client_22;L;44000;Nantes;Rue de la Paix;Rue de la Paix 44000 Nantes;7.011618;49.341245;123
+C023;Client_23;S;31000;Toulouse;Place du Capitole;Place du Capitole 31000 Toulouse;6.366146;48.114537;292
+C024;Client_24;JW;06000;Nice;Rue de la Gare;Rue de la Gare 06000 Nice;6.669123;49.276987;149
+C025;Client_25;VLS;13001;Marseille;Place du Capitole;Place du Capitole 13001 Marseille;2.088834;49.987385;363
+C026;Client_26;MS;75001;Paris;Boulevard Saint-Germain;Boulevard Saint-Germain 75001 Paris;5.714862;46.235086;410
+C027;Client_27;MD;75001;Paris;Rue de la Paix;Rue de la Paix 75001 Paris;1.215066;47.836575;719
+C028;Client_28;S;67000;Strasbourg;Place du Capitole;Place du Capitole 67000 Strasbourg;2.300362;47.756253;846
+C029;Client_29;VDL;06000;Nice;Quai du Port;Quai du Port 06000 Nice;7.101186;46.164857;637
+C030;Client_30;M;06000;Nice;Rue du Faubourg Saint-Honoré;Rue du Faubourg Saint-Honoré 06000 Nice;3.123112;50.571937;254
+C031;Client_31;LW;06000;Nice;Boulevard Saint-Germain;Boulevard Saint-Germain 06000 Nice;2.988376;47.615279;167
+C032;Client_32;L;31000;Toulouse;Place du Capitole;Place du Capitole 31000 Toulouse;1.993599;47.8432;303
+C033;Client_33;MSL;59000;Lille;Rue du Faubourg Saint-Honoré;Rue du Faubourg Saint-Honoré 59000 Lille;4.819467;49.37178;558
+C034;Client_34;V;33000;Bordeaux;Rue du Faubourg Saint-Honoré;Rue du Faubourg Saint-Honoré 33000 Bordeaux;2.750345;50.642599;422
+C035;Client_35;W;06000;Nice;Quai du Port;Quai du Port 06000 Nice;7.456;50.113023;768
+C036;Client_36;D;31000;Toulouse;Rue de la République;Rue de la République 31000 Toulouse;5.261789;47.56695;481
+C037;Client_37;WV;67000;Strasbourg;Avenue des Champs-Élysées;Avenue des Champs-Élysées 67000 Strasbourg;7.177;45.15441;543
+C038;Client_38;JVM;33000;Bordeaux;Rue du Faubourg Saint-Honoré;Rue du Faubourg Saint-Honoré 33000 Bordeaux;4.681806;51.302208;523
+C039;Client_39;DV;75001;Paris;Rue du Faubourg Saint-Honoré;Rue du Faubourg Saint-Honoré 75001 Paris;6.628924;43.452312;576
+C040;Client_40;S;44000;Nantes;Quai du Port;Quai du Port 44000 Nantes;4.76669;43.343022;415
+C041;Client_41;D;13001;Marseille;Rue du Vieux Marché;Rue du Vieux Marché 13001 Marseille;2.238423;51.350434;240
+C042;Client_42;M;67000;Strasbourg;Rue de la Paix;Rue de la Paix 67000 Strasbourg;5.664657;45.181084;793
+C043;Client_43;MW;59000;Lille;Rue de la Gare;Rue de la Gare 59000 Lille;4.720903;50.904037;282
+C044;Client_44;JLW;06000;Nice;Rue du Faubourg Saint-Honoré;Rue du Faubourg Saint-Honoré 06000 Nice;6.67413;48.152098;684
+C045;Client_45;M;67000;Strasbourg;Quai du Port;Quai du Port 67000 Strasbourg;1.761267;46.346545;182
+C046;Client_46;W;13001;Marseille;Avenue Jean Médecin;Avenue Jean Médecin 13001 Marseille;6.144533;50.140435;315
+C047;Client_47;S;13001;Marseille;Place du Capitole;Place du Capitole 13001 Marseille;4.216562;45.589585;434
+C048;Client_48;W;59000;Lille;Place du Capitole;Place du Capitole 59000 Lille;6.003629;44.079936;278
+C049;Client_49;VMD;33000;Bordeaux;Quai du Port;Quai du Port 33000 Bordeaux;6.527087;45.125342;189
+C050;Client_50;WJS;13001;Marseille;Avenue Jean Médecin;Avenue Jean Médecin 13001 Marseille;5.201203;44.063673;623
+C051;Client_51;DL;75001;Paris;Rue du Vieux Marché;Rue du Vieux Marché 75001 Paris;4.424943;44.985536;617
+C052;Client_52;M;13001;Marseille;Rue de la Paix;Rue de la Paix 13001 Marseille;4.376406;46.347463;249
+C053;Client_53;V;59000;Lille;Rue de la Gare;Rue de la Gare 59000 Lille;2.255154;44.908855;523
+C054;Client_54;SW;33000;Bordeaux;Quai du Port;Quai du Port 33000 Bordeaux;6.962152;46.524232;375
+C055;Client_55;D;33000;Bordeaux;Rue du Vieux Marché;Rue du Vieux Marché 33000 Bordeaux;6.394536;47.161591;516
+C056;Client_56;S;44000;Nantes;Rue du Vieux Marché;Rue du Vieux Marché 44000 Nantes;6.769033;43.420802;705
+C057;Client_57;JMV;31000;Toulouse;Rue de la Paix;Rue de la Paix 31000 Toulouse;2.110562;45.846277;687
+C058;Client_58;JVL;35000;Rennes;Avenue Jean Médecin;Avenue Jean Médecin 35000 Rennes;3.794286;49.688416;578
+C059;Client_59;SM;31000;Toulouse;Avenue Jean Médecin;Avenue Jean Médecin 31000 Toulouse;3.856313;48.574358;416
+C060;Client_60;WS;35000;Rennes;Avenue Jean Médecin;Avenue Jean Médecin 35000 Rennes;2.583394;45.044727;640
+C061;Client_61;V;69001;Lyon;Avenue Jean Médecin;Avenue Jean Médecin 69001 Lyon;5.921268;50.833284;531
+C062;Client_62;VJ;33000;Bordeaux;Rue de la Paix;Rue de la Paix 33000 Bordeaux;1.716154;50.356909;401
+C063;Client_63;J;31000;Toulouse;Rue du Vieux Marché;Rue du Vieux Marché 31000 Toulouse;3.447974;45.61701;229
+C064;Client_64;L;06000;Nice;Rue du Faubourg Saint-Honoré;Rue du Faubourg Saint-Honoré 06000 Nice;6.900365;43.422172;746
+C065;Client_65;WJ;67000;Strasbourg;Rue du Faubourg Saint-Honoré;Rue du Faubourg Saint-Honoré 67000 Strasbourg;5.472737;46.952499;569
+C066;Client_66;SW;13001;Marseille;Rue du Vieux Marché;Rue du Vieux Marché 13001 Marseille;3.102241;44.533795;138
+C067;Client_67;WVL;69001;Lyon;Rue de la Paix;Rue de la Paix 69001 Lyon;3.497661;43.281394;478
+C068;Client_68;SW;44000;Nantes;Rue du Faubourg Saint-Honoré;Rue du Faubourg Saint-Honoré 44000 Nantes;3.173381;46.655147;248
+C069;Client_69;LDJ;06000;Nice;Quai du Port;Quai du Port 06000 Nice;6.040903;45.005602;298
+C070;Client_70;MSV;67000;Strasbourg;Avenue des Champs-Élysées;Avenue des Champs-Élysées 67000 Strasbourg;1.688762;48.53338;896
+C071;Client_71;DV;69001;Lyon;Boulevard Saint-Germain;Boulevard Saint-Germain 69001 Lyon;1.424762;45.807172;655
+C072;Client_72;LJ;69001;Lyon;Boulevard Saint-Germain;Boulevard Saint-Germain 69001 Lyon;2.466352;43.541952;393
+C073;Client_73;D;44000;Nantes;Place du Capitole;Place du Capitole 44000 Nantes;1.377663;49.910934;659
+C074;Client_74;MSD;31000;Toulouse;Place du Capitole;Place du Capitole 31000 Toulouse;5.385022;47.723811;496
+C075;Client_75;J;33000;Bordeaux;Avenue des Champs-Élysées;Avenue des Champs-Élysées 33000 Bordeaux;3.89671;46.155306;726
+C076;Client_76;MS;69001;Lyon;Place du Capitole;Place du Capitole 69001 Lyon;2.940635;44.418805;433
+C077;Client_77;JDW;06000;Nice;Quai du Port;Quai du Port 06000 Nice;6.778622;48.228496;196
+C078;Client_78;VWS;35000;Rennes;Rue de la République;Rue de la République 35000 Rennes;1.519198;50.273583;404
+C079;Client_79;D;35000;Rennes;Quai du Port;Quai du Port 35000 Rennes;5.885882;49.464484;415
+C080;Client_80;MSJ;69001;Lyon;Avenue Jean Médecin;Avenue Jean Médecin 69001 Lyon;7.419997;45.767721;447
+C081;Client_81;VS;06000;Nice;Rue du Vieux Marché;Rue du Vieux Marché 06000 Nice;3.513256;49.761391;511
+C082;Client_82;W;67000;Strasbourg;Rue du Faubourg Saint-Honoré;Rue du Faubourg Saint-Honoré 67000 Strasbourg;3.970444;45.460716;830
+C083;Client_83;JMS;31000;Toulouse;Rue de la Paix;Rue de la Paix 31000 Toulouse;5.228674;48.431957;533
+C084;Client_84;DVL;59000;Lille;Boulevard Saint-Germain;Boulevard Saint-Germain 59000 Lille;7.152544;49.234089;254
+C085;Client_85;W;06000;Nice;Rue de la Gare;Rue de la Gare 06000 Nice;3.813119;48.585878;478
+C086;Client_86;J;67000;Strasbourg;Quai du Port;Quai du Port 67000 Strasbourg;3.834965;43.646299;746
+C087;Client_87;WD;06000;Nice;Rue de la Paix;Rue de la Paix 06000 Nice;4.787634;45.641045;632
+C088;Client_88;WLM;13001;Marseille;Avenue des Champs-Élysées;Avenue des Champs-Élysées 13001 Marseille;2.740703;43.037764;750
+C089;Client_89;V;69001;Lyon;Rue de la Gare;Rue de la Gare 69001 Lyon;2.066557;46.459226;600
+C090;Client_90;VW;67000;Strasbourg;Rue de la République;Rue de la République 67000 Strasbourg;4.414752;50.382838;120
+C091;Client_91;JWM;67000;Strasbourg;Rue du Vieux Marché;Rue du Vieux Marché 67000 Strasbourg;2.383384;43.437082;590
+C092;Client_92;JWL;13001;Marseille;Rue du Faubourg Saint-Honoré;Rue du Faubourg Saint-Honoré 13001 Marseille;6.973901;43.215135;119
+C093;Client_93;JL;44000;Nantes;Rue de la Paix;Rue de la Paix 44000 Nantes;7.374054;45.509619;512
+C094;Client_94;LWS;67000;Strasbourg;Rue de la République;Rue de la République 67000 Strasbourg;6.418593;49.66394;424
+C095;Client_95;V;33000;Bordeaux;Rue du Vieux Marché;Rue du Vieux Marché 33000 Bordeaux;3.905877;44.47698;783
+C096;Client_96;SLV;59000;Lille;Boulevard Saint-Germain;Boulevard Saint-Germain 59000 Lille;2.693163;45.519535;133
+C097;Client_97;V;31000;Toulouse;Rue du Vieux Marché;Rue du Vieux Marché 31000 Toulouse;5.214807;44.452137;458
+C098;Client_98;SJW;75001;Paris;Rue de la Paix;Rue de la Paix 75001 Paris;5.487196;48.366429;502
+C099;Client_99;DL;44000;Nantes;Rue de la Paix;Rue de la Paix 44000 Nantes;5.814815;46.611679;381
+C100;Client_100;D;33000;Bordeaux;Rue du Vieux Marché;Rue du Vieux Marché 33000 Bordeaux;1.033375;49.987174;757
