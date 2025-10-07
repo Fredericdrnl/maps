@@ -2,35 +2,40 @@ import pandas as pd
 from geopy.geocoders import Nominatim
 from time import sleep
 
-# 1️⃣ Charger ton fichier Excel
-fichier_excel = "clients.xlsx"  # Remplace par le nom exact de ton fichier
-df = pd.read_excel(fichier_excel)
+# === 1. Charger le fichier Excel ===
+fichier_entree = "adresses.xlsx"  # <-- Mets le nom exact de ton fichier
+fichier_sortie = "adresses_geocodees.xlsx"
 
-# 2️⃣ Créer une colonne "Adresse complète" si elle n'existe pas
-#    On concatène CP, ville et rue
-df['Adresse complète'] = df['Adresse liv cp'].astype(str) + ", " + \
-                        df['Adresse liv ville'].astype(str) + ", " + \
-                        df['Adresse livraison rue'].astype(str)
+# Lire le fichier Excel (première feuille par défaut)
+df = pd.read_excel(fichier_entree)
 
-# 3️⃣ Initialiser le géocodeur
-geolocator = Nominatim(user_agent="geo_calculator")
+# === 2. Identifier la colonne C ===
+# Si la colonne C contient les adresses, on la récupère :
+colonne_adresse = df.columns[2]  # colonne C = index 2 (A=0, B=1, C=2)
 
-# 4️⃣ Fonction pour récupérer latitude et longitude
-def get_lat_lon(adresse):
+# === 3. Créer les colonnes Latitude / Longitude ===
+df["Latitude"] = None
+df["Longitude"] = None
+
+# === 4. Initialiser le géocodeur ===
+geolocator = Nominatim(user_agent="geoapi_exercice")
+
+# === 5. Géocoder chaque adresse ===
+for i, adresse in enumerate(df[colonne_adresse]):
+    if pd.isna(adresse):
+        continue  # ignorer les lignes vides
     try:
         location = geolocator.geocode(adresse)
-        sleep(1)  # Respect de la limite de Nominatim : 1 requête/seconde
         if location:
-            return pd.Series([location.latitude, location.longitude])
+            df.at[i, "Latitude"] = location.latitude
+            df.at[i, "Longitude"] = location.longitude
+            print(f"{i+1}/{len(df)} ✓ {adresse} -> ({location.latitude}, {location.longitude})")
         else:
-            return pd.Series([None, None])
-    except:
-        return pd.Series([None, None])
+            print(f"{i+1}/{len(df)} ✗ Adresse introuvable : {adresse}")
+    except Exception as e:
+        print(f"{i+1}/{len(df)} ⚠️ Erreur pour {adresse} : {e}")
+    sleep(1)  # éviter de surcharger le serveur (Nominatim limite les requêtes)
 
-# 5️⃣ Appliquer la fonction sur la colonne 'Adresse complète'
-df[['Latitude', 'Longitude']] = df['Adresse complète'].apply(get_lat_lon)
-
-# 6️⃣ Sauvegarder le fichier final
-df.to_excel("fichier_avec_coordonnees.xlsx", index=False)
-
-print("✅ Géocodage terminé et colonnes Latitude/Longitude ajoutées.")
+# === 6. Enregistrer le résultat ===
+df.to_excel(fichier_sortie, index=False)
+print(f"\n✅ Fini ! Résultats enregistrés dans : {fichier_sortie}")

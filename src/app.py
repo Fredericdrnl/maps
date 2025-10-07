@@ -1,79 +1,92 @@
 from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS, cross_origin
-from sqlalchemy import or_
+from flask_cors import CORS
+import psycopg2
+from geopy.geocoders import Nominatim
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Foot2562_@localhost:5432/maps'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+CORS(app)
 
-CORS(app, resources={r"/clients/*": {"origins": "*"}})
-db = SQLAlchemy(app)
+# Connexion PostgreSQL
+conn = psycopg2.connect(
+    dbname="maps",
+    user="postgres",
+    password="Foot2562_",
+    host="localhost",
+    port="5432"
+)
 
-class Client(db.Model):
-    __tablename__ = 'clients'
-    id = db.Column(db.Integer, primary_key=True)
-    code_client = db.Column(db.String(50))
-    nom_client = db.Column(db.String(100))
-    jours_livraison = db.Column(db.String(10))
-    adresse_complete = db.Column(db.Text)
-    longitude = db.Column(db.Float)
-    latitude = db.Column(db.Float)
-    couleur = db.Column(db.String(20))
-    tournee = db.Column(db.Integer)
+geolocator = Nominatim(user_agent="my_app")
+
+def geocode_address(address):
+    """Retourne (latitude, longitude) ou (None, None) si échec"""
+    try:
+        location = geolocator.geocode(address)
+        if location:
+            return location.latitude, location.longitude
+    except:
+        pass
+    return None, None
 
 @app.route("/clients", methods=["GET"])
-@cross_origin()
 def get_clients():
-    jours = request.args.get("jours")  # ex: L,M,W
-    nom = request.args.get("nom")      # recherche partielle
-    query = Client.query
-    if jours:
-        jours_list = jours.split(",")
-        conditions = [Client.jours_livraison.ilike(f"%{j}%") for j in jours_list]
-        query = query.filter(or_(*conditions))
-    if nom:
-        query = query.filter(Client.nom_client.ilike(f"%{nom}%"))
-    clients = query.all()
-    return jsonify([{
-        "id": c.id,
-        "code_client": c.code_client,
-        "nom_client": c.nom_client,
-        "jours_livraison": c.jours_livraison,
-        "adresse_complete": c.adresse_complete,
-        "longitude": c.longitude,
-        "latitude": c.latitude,
-        "couleur": c.couleur,
-        "tournee": c.tournee
-    } for c in clients])
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM clients")
+    rows = cur.fetchall()
+    columns = ["id","code_client","nom_client","jours_livraison","adresse_complete",
+               "longitude","latitude","couleur","tournee"]
+    
+    clients = []
+    for r in rows:
+        client = dict(zip(columns, r))
+        # Si pas de coords mais adresse présente, géocoder
+        if (not client["latitude"] or not client["longitude"]) and client["adresse_complete"]:
+            lat, lon = geocode_address(client["adresse_complete"])
+            if lat and lon:
+                client["latitude"] = lat
+                client["longitude"] = lon
+                cur_update = conn.cursor()
+                cur_update.execute(
+                    "UPDATE clients SET latitude=%s, longitude=%s WHERE id=%s",
+                    (lat, lon, client["id"])
+                )
+                conn.commit()
+                cur_update.close()
+        clients.append(client)
+    
+    cur.close()
+    return jsonify(clients)
 
 @app.route("/clients", methods=["POST"])
-@cross_origin()
 def add_client():
     data = request.json
-    client = Client(
-        code_client=data.get("code_client"),
-        nom_client=data.get("nom_client"),
-        jours_livraison=data.get("jours_livraison"),
-        adresse_complete=data.get("adresse_complete"),
-        longitude=data.get("longitude"),
-        latitude=data.get("latitude"),
-        couleur=data.get("couleur","blue"),
-        tournee=data.get("tournee",0)
-    )
-    db.session.add(client)
-    db.session.commit()
-    return jsonify({"success": True, "id": client.id})
+    lat = data.get("latitude")
+    lon = data.get("longitude")
+    
+    # Géocode si pas de coords
+    if (lat is None or lon is None) and data.get("adresse_complete"):
+        lat, lon = geocode_address(data["adresse_complete"])
+        if lat is None or lon is None:
+            return jsonify({"error":"Adresse introuvable"}), 400
+    
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO clients (code_client, nom_client, jours_livraison, adresse_complete, longitude, latitude, couleur, tournee)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+    """, (
+        data["code_client"], data["nom_client"], data["jours_livraison"], 
+        data["adresse_complete"], lon, lat, data.get("couleur","blue"), data.get("tournee",0)
+    ))
+    conn.commit()
+    cur.close()
+    return jsonify({"status":"ok"})
 
 @app.route("/clients/<int:client_id>", methods=["DELETE"])
-@cross_origin()
 def delete_client(client_id):
-    client = Client.query.get(client_id)
-    if client:
-        db.session.delete(client)
-        db.session.commit()
-        return jsonify({"success": True})
-    return jsonify({"success": False, "error":"Client non trouvé"}), 404
+    cur = conn.cursor()
+    cur.execute("DELETE FROM clients WHERE id=%s", (client_id,))
+    conn.commit()
+    cur.close()
+    return jsonify({"status":"deleted"})
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True)
