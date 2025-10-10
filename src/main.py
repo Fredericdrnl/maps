@@ -1,28 +1,68 @@
 import folium
 
-# Carte principale
+# --- CARTE ---
+lat_min, lat_max = 49.6, 51
+lon_min, lon_max = 1.5, 4
+lat_step, lon_step = 0.15, 0.25
+
 m = folium.Map(location=[50.6, 3.0], zoom_start=7, tiles="OpenStreetMap")
+
+def add_grid_cells(map_object, lat_step, lon_step, bounds):
+    lat_min, lat_max, lon_min, lon_max = bounds
+    i = 0
+    lat = lat_min
+    while lat < lat_max:
+        j = 0
+        lon = lon_min
+        while lon < lon_max:
+            # Coordonnées de la case (carré en degrés)
+            coords = [
+                (lat, lon),
+                (lat + lat_step, lon),
+                (lat + lat_step, lon + lon_step),
+                (lat, lon + lon_step),
+                (lat, lon)
+            ]
+            
+            # Polygone interactif avec indices
+            folium.Polygon(
+                coords,
+                color="blue",
+                weight=1,
+                fill=True,
+                fill_opacity=0.1,
+                popup=f"Cellule (i={i}, j={j})"
+            ).add_to(map_object)
+            
+            lon += lon_step
+            j += 1
+        lat += lat_step
+        i += 1
+
+# Ajouter les cases
+add_grid_cells(m, lat_step, lon_step, [lat_min, lat_max, lon_min, lon_max])
 
 html = r"""
 <style>
-/* ===== MENU CENTRÉ ===== */
+/* ===== MENU ===== */
 #topMenu {
     position: fixed;
     top: 10px;
     left: 50%;
     transform: translateX(-50%);
     background: white;
-    padding: 10px 25px;
+    padding: 12px 25px;
     border-radius: 12px;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.25);
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.25);
     z-index: 9999;
     display: flex;
     gap: 15px;
     font-family: Arial, sans-serif;
 }
+
 #topMenu button {
     width: 180px;
-    height: 42px;
+    height: 45px;
     font-size: 15px;
     font-weight: bold;
     background: #007bff;
@@ -33,89 +73,63 @@ html = r"""
     text-align: center;
     transition: all 0.25s ease;
 }
-#topMenu button:hover {
-    background: #0056b3;
-    transform: scale(1.05);
-}
 
-/* ===== POPUP ===== */
-#popup {
-    position: fixed;
-    top: 70px;
-    right: 10px;
-    width: 400px;
-    max-height: 600px;
-    overflow-y: auto;
-    background: white;
-    padding: 16px;
-    border-radius: 10px;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.25);
-    z-index: 9999;
+#topMenu button:hover { background: #0056b3; transform: scale(1.05); }
+
+/* ===== POPUP CLIENT ===== */
+.marker-popup {
     font-family: Arial, sans-serif;
-    transform: translateX(110%);
-    opacity: 0;
-    transition: transform 0.25s ease, opacity 0.25s ease;
-}
-#popup.open {
-    transform: translateX(0);
-    opacity: 1;
-}
-
-/* ===== GLOW ANIMÉ ===== */
-@keyframes markerGlow {
-    0% { filter: drop-shadow(0 0 0px rgba(0,123,255,0.7)); }
-    50% { filter: drop-shadow(0 0 15px rgba(0,123,255,0.9)); }
-    100% { filter: drop-shadow(0 0 0px rgba(0,123,255,0.7)); }
-}
-.highlight-marker {
-    animation: markerGlow 1.2s infinite;
+    font-size: 15px;
+    line-height: 1.4;
+    padding: 10px;
+    background: #ffffffee;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.25);
+    width: 250px;
 }
 
-/* ===== AUTO-SUGGESTION ===== */
-.suggestions {
-    border: 1px solid #ccc;
-    background: #fff;
-    max-height: 180px;
-    overflow-y: auto;
-    position: absolute;
-    z-index: 9999;
-    width: 100%;
-    font-size: 16px;
-    border-radius: 5px;
-    margin-top: 0px;
-}
-.suggestion-item {
-    padding: 8px;
-    cursor: pointer;
-}
-.suggestion-item:hover {
-    background-color: #e9ecef;
-}
-input[type=checkbox] {
-    width: 20px;
-    height: 20px;
-    margin-right: 6px;
-    transform: scale(1.2);
-}
-h5 {
-    font-size: 18px;
+.marker-popup b { font-size: 16px; color: #007bff; }
+
+.marker-popup .btn {
+    display: inline-block;
+    margin-top: 6px;
+    margin-right: 5px;
+    padding: 5px 10px;
+    font-size: 14px;
     font-weight: bold;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
 }
+
+.marker-popup .btn:hover { background-color: #0056b3; }
+
+/* ===== SURBRILLANCE GLOW ===== */
+@keyframes glowPulse {
+    0% { box-shadow: 0 0 0px rgba(255,255,0,0.8); }
+    50% { box-shadow: 0 0 15px 5px rgba(255,255,0,0.7); }
+    100% { box-shadow: 0 0 0px rgba(255,255,0,0.8); }
+}
+
+.glow {
+    animation: glowPulse 1.5s infinite;
+    border-radius: 50%;
+}
+
 </style>
 
 <div id="topMenu">
 <button id="searchBtn">🔍 Recherche client</button>
 <button id="createBtn">➕ Créer client</button>
 </div>
-<div id="popup"></div>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.awesome-markers/2.0.4/leaflet.awesome-markers.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.awesome-markers/2.0.4/leaflet.awesome-markers.js"></script>
 
 <script>
 var map = null;
-var allClients = [];
 var markers = [];
+var allClients = [];
 
 function getMap(){ for(var k in window) if(k.startsWith("map_")) return window[k]; return null; }
 
@@ -124,44 +138,50 @@ async function loadClients() {
         const res = await fetch("http://127.0.0.1:5000/clients");
         const data = await res.json();
         allClients = data;
-        displayAllMarkers();
-    } catch(err){ console.error("Erreur chargement clients:", err); }
+        displayMarkers();
+    } catch(e){ console.error("Erreur chargement clients:", e); }
 }
 
-function displayAllMarkers(){
-    if(!map) map = getMap();
-    markers.forEach(mObj => { 
-        if(map.hasLayer(mObj.marker)) map.removeLayer(mObj.marker); 
-        mObj.marker.getElement()?.classList.remove("highlight-marker");
-    });
+function createPopupHTML(c){
+    return `<div class="marker-popup">
+        <b>${c.nom_client}</b><br>
+        Code: ${c.code_client}<br>
+        Adresse: ${c.adresse_complete || "Non renseignée"}<br>
+        Jours: ${c.jours_livraison || "Non renseigné"}<br>
+        Tournée: ${c.tournee || 0}<br>
+        <button class='btn' onclick="deleteClient(${c.id})">Supprimer</button>
+        <button class='btn' onclick="editClient(${c.id})">Modifier</button>
+    </div>`;
+}
+
+function displayMarkers(){
+    if(!map) map=getMap();
+    markers.forEach(m => { if(map.hasLayer(m)) map.removeLayer(m); });
     markers = [];
 
     allClients.forEach(c => {
         if(!c.latitude || !c.longitude) return;
-        const icon = L.AwesomeMarkers.icon({icon:'info-sign', markerColor:c.couleur || 'blue'});
-        const marker = L.marker([c.latitude, c.longitude], {icon})
-            .bindPopup(`<b>${c.nom_client}</b><br>${c.code_client}<br>${c.jours_livraison}<br>${c.adresse_complete}<br>
-                        <button class='delete-btn' data-id='${c.id}'>Supprimer</button>`);
+        const marker = L.marker([c.latitude, c.longitude])
+            .bindPopup(createPopupHTML(c));
         marker.addTo(map);
-        markers.push({marker, client:c});
+        marker.client = c;
+        markers.push(marker);
     });
 }
 
 function updateHighlight(filters){
     const {jours, nom, code} = filters;
-    markers.forEach(mObj => {
-        const {marker, client} = mObj;
-        const matchJour = jours.length===0 || jours.some(j=>client.jours_livraison.includes(j));
-        const matchNom = nom ? client.nom_client.toLowerCase().includes(nom.toLowerCase()) : true;
-        const matchCode = code ? client.code_client.toLowerCase().includes(code.toLowerCase()) : true;
-        const visible = matchJour && matchNom && matchCode;
-
-        if(visible){
-            if(!map.hasLayer(marker)) marker.addTo(map);
-            marker.getElement()?.classList.add("highlight-marker"); // glow activé
+    markers.forEach(m=>{
+        const c = m.client;
+        const matchJour = jours.length===0 || jours.some(j=>c.jours_livraison?.includes(j));
+        const matchNom = !nom || c.nom_client.toLowerCase().includes(nom.toLowerCase());
+        const matchCode = !code || c.code_client.toLowerCase().includes(code.toLowerCase());
+        if(matchJour && matchNom && matchCode){
+            if(!map.hasLayer(m)) m.addTo(map);
+            if(m._icon) m._icon.classList.add("glow");
         } else {
-            if(map.hasLayer(marker)) map.removeLayer(marker);
-            marker.getElement()?.classList.remove("highlight-marker"); // glow désactivé
+            if(map.hasLayer(m)) map.removeLayer(m);
+            if(m._icon) m._icon.classList.remove("glow");
         }
     });
 }
@@ -172,108 +192,15 @@ async function deleteClient(id){
     loadClients();
 }
 
-function openPopup(html){ const p = document.getElementById("popup"); p.innerHTML=html; p.classList.add("open"); }
-function closePopup(){ document.getElementById("popup").classList.remove("open"); }
+function editClient(id){ alert("Édition non implémentée pour l'instant. ID: "+id); }
 
-function getCurrentFilters(){
-    const popup = document.getElementById("popup");
-    const jours = Array.from(popup.querySelectorAll("input[type=checkbox]:checked")).map(c=>c.value);
-    const nom = popup.querySelector("#nameSearch")?.value || "";
-    const code = popup.querySelector("#codeSearch")?.value || "";
-    return {jours, nom, code};
-}
-
-function showSuggestions(inputEl, field, containerId){
-    const query = inputEl.value.toLowerCase();
-    const container = document.getElementById(containerId);
-    container.innerHTML = "";
-    if(query.length<1) return;
-    const matches = allClients.filter(c => c[field].toLowerCase().includes(query)).slice(0,8);
-    matches.forEach(c=>{
-        const div = document.createElement("div");
-        div.className="suggestion-item";
-        div.textContent=`${c.nom_client} (${c.code_client})`;
-        div.onclick=()=>{
-            inputEl.value = c[field];
-            container.innerHTML="";
-            map.setView([c.latitude,c.longitude],14);
-            markers.forEach(m => {
-                if(m.client.id === c.id) m.marker.openPopup();
-            });
-            updateHighlight(getCurrentFilters());
-        };
-        container.appendChild(div);
-    });
-}
-
-document.addEventListener("DOMContentLoaded",()=>{
+document.addEventListener("DOMContentLoaded", ()=>{
     map = getMap();
     loadClients();
-
-    document.getElementById("searchBtn").onclick = ()=>{
-        const jours=['L','M','W','J','V','S','D'];
-        const html = `
-            <h4>🔍 Recherche client</h4>
-            <input id='nameSearch' placeholder='Nom client' style='width:95%; margin-bottom:8px;'>
-            <div id='suggestionsNom' class='suggestions'></div>
-            <input id='codeSearch' placeholder='Code client' style='width:95%; margin-bottom:12px;'>
-            <div id='suggestionsCode' class='suggestions'></div>
-            <h5>📅 Jours de livraison</h5>
-            ${jours.map(j=>`<label><input type='checkbox' value='${j}' checked> ${j}</label><br>`).join("")}
-            <div id='clientCount'></div>
-            <br><button id='closePopup'>Fermer</button>`;
-        openPopup(html);
-
-        const popup = document.getElementById("popup");
-        const update = ()=>updateHighlight(getCurrentFilters());
-        popup.querySelectorAll("input[type=checkbox]").forEach(i=>i.addEventListener("change", update));
-        popup.querySelector("#nameSearch").addEventListener("input", ()=>{ showSuggestions(popup.querySelector("#nameSearch"), "nom_client","suggestionsNom"); update(); });
-        popup.querySelector("#codeSearch").addEventListener("input", ()=>{ showSuggestions(popup.querySelector("#codeSearch"), "code_client","suggestionsCode"); update(); });
-        popup.querySelector("#closePopup").onclick = closePopup;
-
-        update(); // applique filtre initial
-    };
-
-    document.getElementById("createBtn").onclick = ()=>{
-        const html = `
-            <h4>➕ Créer un client</h4>
-            <input id='code_client' placeholder='Code client' style='width:95%;'>
-            <input id='nom_client' placeholder='Nom client' style='width:95%;'>
-            <input id='jours_livraison' placeholder='Jours (ex: LMV)' style='width:95%;'>
-            <input id='adresse_complete' placeholder='Adresse' style='width:95%;'>
-            <input id='longitude' placeholder='Longitude' style='width:95%;'>
-            <input id='latitude' placeholder='Latitude' style='width:95%;'>
-            <input id='couleur' placeholder='Couleur' style='width:95%;'>
-            <input id='tournee' type='number' placeholder='Tournée' style='width:95%;'>
-            <button id='saveBtn'>Enregistrer</button>
-            <button id='closePopup'>Fermer</button>`;
-        openPopup(html);
-
-        const popup = document.getElementById("popup");
-        popup.querySelector("#saveBtn").onclick = async ()=>{
-            const c = {
-                code_client: popup.querySelector("#code_client").value,
-                nom_client: popup.querySelector("#nom_client").value,
-                jours_livraison: popup.querySelector("#jours_livraison").value,
-                adresse_complete: popup.querySelector("#adresse_complete").value,
-                longitude: parseFloat(popup.querySelector("#longitude").value),
-                latitude: parseFloat(popup.querySelector("#latitude").value),
-                couleur: popup.querySelector("#couleur").value || "blue",
-                tournee: parseInt(popup.querySelector("#tournee").value)||0
-            };
-            await fetch("http://127.0.0.1:5000/clients",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(c)});
-            closePopup(); loadClients();
-        };
-        popup.querySelector("#closePopup").onclick = closePopup;
-    };
-
-    document.addEventListener("click", e=>{
-        if(e.target.matches(".delete-btn")) deleteClient(e.target.dataset.id);
-    });
 });
 </script>
 """
 
 m.get_root().html.add_child(folium.Element(html))
-m.save("map_clients_postgres_glow.html")
-print("✅ Carte prête : glow animé sur clients filtrés, auto-suggestion, popup, filtres par jours.")
+m.save("map_clients_popup_glow.html")
+print("✅ Carte prête : popups modernes, glow sur clients filtrés, boutons stylés.")
