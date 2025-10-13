@@ -1,13 +1,13 @@
 CREATE TABLE IF NOT EXISTS client (
     id SERIAL PRIMARY KEY,
-    code_client INTEGER,
-    nom_client TEXT,
-    adresse_livraison TEXT,
-    latitude TEXT,
-    longitude TEXT,
-    couleur VARCHAR(20),
-    tournee INTEGER,
-    jours_livraison VARCHAR(10)
+    "Code client" INTEGER,
+    "Nom client" TEXT,
+    "adresse livraison" TEXT,
+    "Latitude" TEXT,
+    "Longitude" TEXT,
+    "couleur" VARCHAR(20),
+    "tournee" INTEGER,
+    "jours_livraison" VARCHAR(10)
 );
 
 INSERT INTO "client"("Code client", "Nom client", "adresse livraison", "Latitude", "Longitude") VALUES (201241,'CENTRE HOSP. REG. UNIVERS. DE LILLE','1 BD DU PR JULES LECLERC, 59000 LILLE','50.60724765812908','3.0373539389524016');
