@@ -1,89 +1,101 @@
+# -*- coding: utf-8 -*-
 import os
+import re
 import json
 import requests
+from typing import Optional, Tuple, Dict, Any, List
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import psycopg2
-from psycopg2.extras import RealDictCursor
+import psycopg2.extras
 
-# ------------------------------
-# Config connexion PostgreSQL
-# ------------------------------
-PGHOST = os.getenv("PGHOST", "localhost")
-PGPORT = int(os.getenv("PGPORT", "5432"))
-PGDATABASE = os.getenv("PGDATABASE", "maps")
-PGUSER = os.getenv("PGUSER", "postgres")
-PGPASSWORD = os.getenv("PGPASSWORD", "Foot2562_")
+# =========================
+# Configuration PostgreSQL
+# =========================
+DB_CONFIG = {
+    "host": os.getenv("PGHOST", "localhost"),
+    "port": int(os.getenv("PGPORT", "5432")),
+    "dbname": os.getenv("PGDATABASE", "maps"),
+    "user": os.getenv("PGUSER", "postgres"),
+    "password": os.getenv("PGPASSWORD", "Foot2562_"),
+}
 
-# ------------------------------
-# Config Nominatim (géocodage)
-# ------------------------------
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 NOMINATIM_HEADERS = {
-    "User-Agent": "client-map-app/1.0 (contact@example.com)"
-}
-NOMINATIM_DEFAULT_PARAMS = {
-    "format": "json",
-    "addressdetails": 1,
-    "countrycodes": "fr",
-    "accept-language": "fr",
-    "viewbox": "-1.5,51.5,5.0,48.5",
-    "bounded": 1,
-    "limit": 1
+    "User-Agent": "clients-mapping-app/1.0 (contact: you@example.com)"
 }
 
 app = Flask(__name__)
 CORS(app)
 
-# ------------------------------
-# Connexion DB
-# ------------------------------
+
+# =========================
+# Utilitaires
+# =========================
 def get_conn():
-    return psycopg2.connect(
-        host=PGHOST, port=PGPORT, dbname=PGDATABASE,
-        user=PGUSER, password=PGPASSWORD
-    )
+    conn = psycopg2.connect(**DB_CONFIG)
+    conn.set_client_encoding('UTF8')  # ✅ force UTF-8 côté client PostgreSQL
+    conn.autocommit = True
+    return conn
 
-def init_db():
+
+def ensure_table():
+    ddl = """
+    CREATE TABLE IF NOT EXISTS clients (
+        id SERIAL PRIMARY KEY,
+        "code_client" INTEGER,
+        "nom_client" TEXT,
+        "adresse_livraison" TEXT,
+        "latitude" TEXT,
+        "longitude" TEXT,
+        "num_tournee" TEXT,
+        "jour_livraison" TEXT
+    );
+    """
     with get_conn() as conn, conn.cursor() as cur:
-        cur.execute("""
-        CREATE TABLE IF NOT EXISTS clients(
-            id SERIAL PRIMARY KEY,
-            code_client INTEGER,
-            nom_client TEXT,
-            adresse_livraison TEXT,
-            latitude TEXT,
-            longitude TEXT,
-            couleur VARCHAR(20),
-            tournee VARCHAR(10),
-            jours_livraison VARCHAR(10)
-        );
-        """)
-        conn.commit()
+        cur.execute(ddl)
 
-# ------------------------------
-# Géocodage adresse
-# ------------------------------
-def geocode_address(address: str):
-    if not address:
+
+def to_float_or_none(val: Optional[str]) -> Optional[float]:
+    if val is None:
         return None
-    params = dict(NOMINATIM_DEFAULT_PARAMS)
-    params["q"] = address
+    s = str(val).strip()
+    if s == "":
+        return None
+    s = re.sub(r"[^0-9\-,\.]", "", s).replace(",", ".")
     try:
-        r = requests.get(NOMINATIM_URL, params=params, headers=NOMINATIM_HEADERS, timeout=8)
-        if r.status_code != 200:
-            return None
+        return float(s)
+    except ValueError:
+        return None
+
+
+def geocode_address(address: str) -> Optional[Tuple[float, float]]:
+    if not address or not address.strip():
+        return None
+    params = {
+        "q": address,
+        "format": "json",
+        "limit": 1,
+        "countrycodes": "fr",
+        "accept-language": "fr",
+    }
+    try:
+        r = requests.get(NOMINATIM_URL, params=params, headers=NOMINATIM_HEADERS, timeout=10)
+        r.raise_for_status()
         data = r.json()
         if not data:
             return None
-        return str(data[0]["lat"]), str(data[0]["lon"])
+        lat = to_float_or_none(data[0].get("lat"))
+        lon = to_float_or_none(data[0].get("lon"))
+        if lat is None or lon is None:
+            return None
+        return (lat, lon)
     except Exception:
         return None
 
-# ------------------------------
-# Utils
-# ------------------------------
-def row_to_client(row: dict):
+
+def row_to_client(row: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "id": row["id"],
         "code_client": row["code_client"],
@@ -91,186 +103,219 @@ def row_to_client(row: dict):
         "adresse_livraison": row["adresse_livraison"],
         "latitude": row["latitude"],
         "longitude": row["longitude"],
-        "couleur": row["couleur"],
-        "tournee": row["tournee"],
-        "jours_livraison": row["jours_livraison"]
+        "num_tournee": row["num_tournee"],
+        "jour_livraison": row["jour_livraison"],
     }
 
-# ------------------------------
-# Routes API
-# ------------------------------
 
-# 📍 GET - Liste + filtres
+def normalize_days(s: Optional[str]) -> Optional[str]:
+    if s is None:
+        return None
+    return s.strip().upper() or None
+
+
+# =========================
+# Gestion des erreurs JSON
+# =========================
+@app.errorhandler(400)
+def bad_request(e):
+    return jsonify(error="Bad Request", detail=str(e)), 400
+
+
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify(error="Not Found", detail=str(e)), 404
+
+
+@app.errorhandler(500)
+def internal_error(e):
+    return jsonify(error="Internal Server Error", detail=str(e)), 500
+
+
+def json_error(msg: str, code: int = 400):
+    return jsonify({"error": msg}), code
+
+
+# =========================
+# Routes principales
+# =========================
 @app.route("/clients", methods=["GET"])
 def list_clients():
-    nom = request.args.get("nom", "").strip()
-    code = request.args.get("code", "").strip()
-    jour = request.args.get("jour", "").strip()
-    tournee = request.args.get("tournee", "").strip()
+    args = request.args
+    nom = args.get("nom")
+    code = args.get("code")
+    raw_tournee = args.get("num_tournee") or args.get("tournee")
+    raw_jour = args.get("jour_livraison") or args.get("jour")
 
     where = []
-    params = {}
-    if nom:
-        where.append("nom_client ILIKE %(nom)s")
-        params["nom"] = f"%{nom}%"
-    if code:
-        where.append("CAST(code_client AS TEXT) ILIKE %(code)s")
-        params["code"] = f"%{code}%"
-    if jour:
-        where.append("jours_livraison ILIKE %(jour)s")
-        params["jour"] = f"%{jour}%"
-    if tournee:
-        where.append("tournee ILIKE %(tournee)s")
-        params["tournee"] = f"%{tournee}%"
+    params: List[Any] = []
 
-    sql = "SELECT * FROM clients"
+    if nom:
+        where.append('"nom_client" ILIKE %s')
+        params.append(f"%{nom}%")
+
+    if code:
+        try:
+            code_int = int(code)
+            where.append('"code_client" = %s')
+            params.append(code_int)
+        except ValueError:
+            where.append('CAST("code_client" AS TEXT) ILIKE %s')
+            params.append(f"%{code}%")
+
+    if raw_tournee:
+        where.append('"num_tournee" ILIKE %s')
+        params.append(f"%{raw_tournee}%")
+
+    if raw_jour:
+        where.append('"jour_livraison" ILIKE %s')
+        params.append(f"%{raw_jour}%")
+
+    sql = """
+        SELECT id, "code_client", "nom_client", "adresse_livraison",
+               "latitude", "longitude", "num_tournee", "jour_livraison"
+        FROM clients
+    """
     if where:
         sql += " WHERE " + " AND ".join(where)
     sql += " ORDER BY id DESC"
 
-    with get_conn() as conn, conn.cursor(cursor_factory=RealDictCursor) as cur:
+    with get_conn() as conn, conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute(sql, params)
         rows = cur.fetchall()
         return jsonify([row_to_client(r) for r in rows])
 
-# 📍 POST - Créer un client
+
 @app.route("/clients", methods=["POST"])
 def create_client():
     try:
-        payload = request.get_json(force=True)
+        data = request.get_json(force=True, silent=False) or {}
     except Exception:
-        return jsonify({"error": "JSON invalide"}), 400
+        return json_error("Corps JSON invalide", 400)
 
-    nom = (payload.get("nom_client") or "").strip()
-    code_client = payload.get("code_client")
-    adresse = (payload.get("adresse_livraison") or "").strip()
-    lat = (payload.get("latitude") or "").strip()
-    lon = (payload.get("longitude") or "").strip()
-    tournee = (payload.get("tournee") or "").strip()
-    jours = (payload.get("jours_livraison") or "").strip()
-    couleur = (payload.get("couleur") or "").strip() or None
+    nom_client = data.get("nom_client")
+    code_client = data.get("code_client")
+    adresse = data.get("adresse_livraison")
 
-    if not nom:
-        return jsonify({"error": "nom_client est obligatoire"}), 400
-    if not code_client:
-        return jsonify({"error": "code_client est obligatoire"}), 400
+    if not nom_client:
+        return json_error("nom_client est obligatoire", 400)
+    if code_client in (None, ""):
+        return json_error("code_client est obligatoire", 400)
     if not adresse:
-        return jsonify({"error": "adresse_livraison est obligatoire"}), 400
+        return json_error("adresse_livraison est obligatoire", 400)
 
-    if not lat or not lon:
-        geo = geocode_address(adresse)
-        if not geo:
-            return jsonify({"error": "Adresse introuvable (géocodage)."}), 400
-        lat, lon = geo
+    jour_livraison = normalize_days(data.get("jour_livraison"))
+    num_tournee = (data.get("num_tournee") or "").strip() or None
 
-    with get_conn() as conn, conn.cursor(cursor_factory=RealDictCursor) as cur:
-        cur.execute("""
-            INSERT INTO clients (code_client, nom_client, adresse_livraison, latitude, longitude, couleur, tournee, jours_livraison)
-            VALUES (%(code_client)s, %(nom)s, %(adresse)s, %(lat)s, %(lon)s, %(couleur)s, %(tournee)s, %(jours)s)
-            RETURNING *;
-        """, {
-            "code_client": code_client,
-            "nom": nom,
-            "adresse": adresse,
-            "lat": lat,
-            "lon": lon,
-            "couleur": couleur,
-            "tournee": tournee,
-            "jours": jours
-        })
+    lat_str = data.get("latitude")
+    lon_str = data.get("longitude")
+
+    lat = to_float_or_none(lat_str)
+    lon = to_float_or_none(lon_str)
+
+    if lat is None or lon is None:
+        coords = geocode_address(adresse)
+        if not coords:
+            return json_error("Adresse introuvable - géocodage impossible", 400)
+        lat_out = f"{coords[0]}"
+        lon_out = f"{coords[1]}"
+    else:
+        lat_out = f"{lat}"
+        lon_out = f"{lon}"
+
+    sql = """
+        INSERT INTO clients ("code_client", "nom_client", "adresse_livraison", "latitude", "longitude", "num_tournee", "jour_livraison")
+        VALUES (%s,%s,%s,%s,%s,%s,%s)
+        RETURNING id, "code_client", "nom_client", "adresse_livraison", "latitude", "longitude", "num_tournee", "jour_livraison";
+    """
+    vals = (code_client, nom_client, adresse, lat_out, lon_out, num_tournee, jour_livraison)
+
+    with get_conn() as conn, conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute(sql, vals)
         row = cur.fetchone()
-        conn.commit()
         return jsonify(row_to_client(row)), 201
 
-# 📍 PUT - Modifier un client
+
 @app.route("/clients/<int:client_id>", methods=["PUT"])
 def update_client(client_id: int):
     try:
-        payload = request.get_json(force=True)
+        data = request.get_json(force=True, silent=False) or {}
     except Exception:
-        return jsonify({"error": "JSON invalide"}), 400
+        return json_error("Corps JSON invalide", 400)
 
-    with get_conn() as conn, conn.cursor(cursor_factory=RealDictCursor) as cur:
-        cur.execute("SELECT * FROM clients WHERE id=%s", (client_id,))
+    with get_conn() as conn, conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+        cur.execute('SELECT * FROM clients WHERE id=%s', (client_id,))
         current = cur.fetchone()
         if not current:
-            return jsonify({"error": "Client introuvable"}), 404
+            return json_error("Client introuvable", 404)
 
-        nom = (payload.get("nom_client") or current["nom_client"] or "").strip()
-        code_client = payload.get("code_client", current["code_client"])
-        adresse = (payload.get("adresse_livraison") or current["adresse_livraison"] or "").strip()
-        lat = (payload.get("latitude") or "").strip()
-        lon = (payload.get("longitude") or "").strip()
-        tournee = (payload.get("tournee") or current["tournee"] or "").strip()
-        jours = (payload.get("jours_livraison") or current["jours_livraison"] or "").strip()
-        couleur = (payload.get("couleur") or current["couleur"])
+        code_client = data.get("code_client", current["code_client"])
+        nom_client = data.get("nom_client", current["nom_client"])
+        adresse_livraison = data.get("adresse_livraison", current["adresse_livraison"])
+        num_tournee = (data.get("num_tournee")
+                       if data.get("num_tournee") is not None
+                       else current["num_tournee"])
+        jour_livraison = normalize_days(
+            data.get("jour_livraison", current["jour_livraison"])
+        )
 
-        if not nom:
-            return jsonify({"error": "nom_client est obligatoire"}), 400
-        if not code_client:
-            return jsonify({"error": "code_client est obligatoire"}), 400
-        if not adresse:
-            return jsonify({"error": "adresse_livraison est obligatoire"}), 400
+        lat_str = data.get("latitude", current["latitude"])
+        lon_str = data.get("longitude", current["longitude"])
 
-        address_changed = (adresse != (current["adresse_livraison"] or ""))
-
-        if not lat or not lon:
-            if address_changed:
-                geo = geocode_address(adresse)
-                if not geo:
-                    return jsonify({"error": "Adresse introuvable (géocodage)."}), 400
-                lat, lon = geo
+        if "latitude" in data or "longitude" in data:
+            lat = to_float_or_none(lat_str)
+            lon = to_float_or_none(lon_str)
+            if lat is not None and lon is not None:
+                latitude_out = f"{lat}"
+                longitude_out = f"{lon}"
             else:
-                lat = current["latitude"]
-                lon = current["longitude"]
-                if (not lat) or (not lon):
-                    geo = geocode_address(adresse)
-                    if not geo:
-                        return jsonify({"error": "Adresse introuvable (géocodage)."}), 400
-                    lat, lon = geo
+                coords = geocode_address(adresse_livraison)
+                if not coords:
+                    return json_error("Adresse introuvable - géocodage impossible", 400)
+                latitude_out = f"{coords[0]}"
+                longitude_out = f"{coords[1]}"
+        else:
+            if (adresse_livraison or "") != (current["adresse_livraison"] or ""):
+                coords = geocode_address(adresse_livraison)
+                if not coords:
+                    return json_error("Adresse introuvable - géocodage impossible", 400)
+                latitude_out = f"{coords[0]}"
+                longitude_out = f"{coords[1]}"
+            else:
+                latitude_out = current["latitude"]
+                longitude_out = current["longitude"]
 
-        cur.execute("""
+        sql = """
             UPDATE clients
-            SET code_client=%(code)s,
-                nom_client=%(nom)s,
-                adresse_livraison=%(adresse)s,
-                latitude=%(lat)s,
-                longitude=%(lon)s,
-                couleur=%(couleur)s,
-                tournee=%(tournee)s,
-                jours_livraison=%(jours)s
-            WHERE id=%(id)s
-            RETURNING *;
-        """, {
-            "code": code_client,
-            "nom": nom,
-            "adresse": adresse,
-            "lat": lat,
-            "lon": lon,
-            "couleur": couleur,
-            "tournee": tournee,
-            "jours": jours,
-            "id": client_id
-        })
+            SET "code_client"=%s, "nom_client"=%s, "adresse_livraison"=%s,
+                "latitude"=%s, "longitude"=%s,
+                "num_tournee"=%s, "jour_livraison"=%s
+            WHERE id=%s
+            RETURNING id, "code_client", "nom_client", "adresse_livraison", "latitude", "longitude", "num_tournee", "jour_livraison";
+        """
+        vals = (
+            code_client, nom_client, adresse_livraison,
+            latitude_out, longitude_out, num_tournee, jour_livraison, client_id
+        )
+        cur.execute(sql, vals)
         row = cur.fetchone()
-        conn.commit()
-        return jsonify(row_to_client(row)), 200
+        return jsonify(row_to_client(row))
 
-# 📍 DELETE - Supprimer un client
+
 @app.route("/clients/<int:client_id>", methods=["DELETE"])
 def delete_client(client_id: int):
     with get_conn() as conn, conn.cursor() as cur:
-        cur.execute("DELETE FROM clients WHERE id=%s RETURNING id;", (client_id,))
-        deleted = cur.fetchone()
-        conn.commit()
-        if not deleted:
-            return jsonify({"error": "Client introuvable"}), 404
-        return jsonify({"status": "ok", "deleted_id": client_id}), 200
+        cur.execute('DELETE FROM clients WHERE id=%s', (client_id,))
+        if cur.rowcount == 0:
+            return json_error("Client introuvable", 404)
+    return jsonify({"status": "ok", "deleted_id": client_id})
 
-# ------------------------------
-# Entrée
-# ------------------------------
+
+# =========================
+# Entrée principale
+# =========================
 if __name__ == "__main__":
-    init_db()
+    ensure_table()
     port = int(os.getenv("PORT", "5000"))
-    app.run(host="127.0.0.1", port=port, debug=True)
+    debug = bool(int(os.getenv("FLASK_DEBUG", "1")))
+    app.run(host="0.0.0.0", port=port, debug=debug)
